@@ -20,13 +20,14 @@ namespace AlgorytmyGrafowe
             string sciezka;
             siec = new Siec();
             wczytywanie();
-            PoprawianieEtykiet poprawianie_etykiet = new PoprawianieEtykiet();
+            PoprawianieEtykiet poprawianie_etykiet = new PoprawianieEtykiet(liczbaWezlow);
             poprawianie_etykiet.siec = siec;
             poprawianie_etykiet.lacza = lacze;
             poprawianie_etykiet.wezly = wezly;
-            sciezka = poprawianie_etykiet.sciezkaMiedzyWezlami(1,4);
+            sciezka = poprawianie_etykiet.sciezkaMiedzyWszystkimiWezlami(1);
             Console.WriteLine(sciezka);
             Console.ReadLine();
+            
         }
         public void wczytywanie()
         {
