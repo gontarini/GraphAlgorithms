@@ -8,15 +8,16 @@ namespace AlgorytmyGrafowe
 {
     class PoprawianieEtykiet:IWyznaczanieSciezek
     {
+        #region zmienne i kolejkce
         private Queue<int> fifo;
         private List<string> sciezki;
         public Siec siec;
-        public double[,] kosztSciezki;
+        private double[,] kosztSciezki;
         public Wezel[] wezly;
         public Lacze[] lacza;
         private double nieskonczonosc = Double.PositiveInfinity;
         private int wskaznik_ilosci_dostepnych_drog;
-
+        #endregion
 
         public PoprawianieEtykiet(int liczbaWezlow)
         {
@@ -38,11 +39,6 @@ namespace AlgorytmyGrafowe
                 wezly[i].etykieta = 0;
                 wezly[i].odwiedzone = false;
             }
-            siec.tablica_wierzcholkow = new int[siec.liczbaWezlow + 1]; //Reset tablicy wierzchołków
-            for (int i = 0; i <= siec.liczbaWezlow; i++)
-            {
-                siec.tablica_wierzcholkow[i] = 0;
-            }
             siec.liczba_odwiedzonych_wezlow = 0;
             #endregion
 
@@ -54,7 +50,6 @@ namespace AlgorytmyGrafowe
                 tmp = fifo.Dequeue();
                 wezly[tmp].odwiedzone = true;
                 lacza_current = zwracamPolaczenia(tmp); //zwracam możliwe drogi z danego wezla do innych
-                siec.tablica_wierzcholkow[siec.liczba_odwiedzonych_wezlow] = tmp;   //odnotowuje drogę
 
                 lacza_current = sortowanie(lacza_current); //sortowanie w celu sprawdzania najpierw najgrubszych polaczen
                 while(wskaznik_ilosci_dostepnych_drog != 1) //dopóki istnieja zwrócone wcześniej drogi, zmieniam etykiety
@@ -75,12 +70,9 @@ namespace AlgorytmyGrafowe
                 else
                     kosztSciezki[wezelPocz, wezelKoncowy] += wezly[wezelKoncowy].etykieta;
 
-            }
-            //foreach (int element in siec.tablica_wierzcholkow)
-            //Console.WriteLine(element);
-            
+            }            
             sciezki.Add(sciezka);
-            Console.ReadLine();
+            //Console.ReadLine();
             return sciezka;
         }
 
@@ -128,6 +120,21 @@ namespace AlgorytmyGrafowe
             {
                 if(i!= wezelPocz)
                 sciezka += sciezkaMiedzyWezlami(wezelPocz, i) + "\n";
+            }
+            return sciezka;
+        }
+
+        public string wszystkieSciezki()
+        {
+            string sciezka = "";
+
+            for (int i = 1; i <= siec.liczbaWezlow; i++)
+            {
+                for (int j = 1; j <= siec.liczbaWezlow; j++)
+                {
+                    if (i != j)
+                        sciezka += sciezkaMiedzyWezlami(i, j) + "\n";
+                }
             }
             return sciezka;
         }

@@ -24,7 +24,7 @@ namespace AlgorytmyGrafowe
             poprawianie_etykiet.siec = siec;
             poprawianie_etykiet.lacza = lacze;
             poprawianie_etykiet.wezly = wezly;
-            sciezka = poprawianie_etykiet.sciezkaMiedzyWszystkimiWezlami(1);
+            sciezka = poprawianie_etykiet.wszystkieSciezki();
             Console.WriteLine(sciezka);
             Console.ReadLine();
             
