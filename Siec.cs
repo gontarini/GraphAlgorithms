@@ -12,14 +12,12 @@ namespace AlgorytmyGrafowe
         public int liczbaKrawedzi;
         public int liczba_odwiedzonych_wezlow;
 
-        //Floyda jeszcze nie robiłem + przeczytaj commenty, bo są skierowane do Ciebie :D
+        
+        public int[,] macierz_poprzednikow;
+        public double[,] macierz_sasiedztwa;
+        public double[,] macierz_najdluzszych_sciezek;
 
-        //public double[,] tablica_drog;
-        //public double[,] tablica_drog_Etykiety;
-        //public double[,] tablica_drog2;
-        //public double[,] tablica_drog_Floyd;
-        //public int[,] tablica_drog_Floyd_nast;
-        public int[] tablica_wierzcholkow;
+        public int[,] tablica_wierzcholkow;
 
         public Siec()
         {

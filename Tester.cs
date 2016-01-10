@@ -8,32 +8,83 @@ namespace AlgorytmyGrafowe
 {
     class Tester
     {
+        #region zmienne
         private Siec siec;
         private Lacze[] lacze;
         private Wezel[] wezly;
         private string sciezkaWejscia;
         private int liczbaWezlow;
         private int liczbaLaczy;
-
-        public Tester() // na razie jest roboczo
+        private int A;
+        private double czasEtykiety;
+        private double czasFloyd;
+        #endregion
+        public Tester()
         {
-            string sciezka;
-            siec = new Siec();
-            wczytywanie();
-            PoprawianieEtykiet poprawianie_etykiet = new PoprawianieEtykiet(liczbaWezlow);
-            poprawianie_etykiet.siec = siec;
-            poprawianie_etykiet.lacza = lacze;
-            poprawianie_etykiet.wezly = wezly;
-            sciezka = poprawianie_etykiet.wszystkieSciezki();
-            Console.WriteLine(sciezka);
+            Random rnd = new Random(DateTime.Now.Millisecond);
+            double losowa2;
+            czasEtykiety = 0; czasFloyd = 0;
+            bool okej = false;
+            //string sciezka;
+            while (okej != true)
+            {
+                try
+                {
+                    siec = new Siec();
+                    wczytywanie();
+
+                    #region inicjacje
+                    //generacja macierzy poprzednikow
+                    siec.macierz_poprzednikow = new int[siec.liczbaWezlow + 1, siec.liczbaWezlow + 1];
+                    //generacja macierzy sasiedztwa
+                    siec.macierz_sasiedztwa = new double[siec.liczbaWezlow + 1, siec.liczbaWezlow + 1];
+                    siec.macierz_najdluzszych_sciezek = new double[siec.liczbaWezlow + 1, siec.liczbaWezlow + 1];
+                    
+                    PoprawianieEtykiet poprawianie_etykiet = new PoprawianieEtykiet(liczbaWezlow);
+                    poprawianie_etykiet.siec = siec;
+                    poprawianie_etykiet.lacza = lacze;
+                    poprawianie_etykiet.wezly = wezly;
+
+                    Floyd floyd = new Floyd();
+                    floyd.siec = siec;
+                    floyd.lacza = lacze;
+                    floyd.wezly = wezly;
+                    #endregion
+
+                    Console.WriteLine("Podaj liczbę wykonań operacji znajdowania sciezek: [A]");
+                    A = int.Parse(Console.ReadLine());
+                    okej = true;
+
+                    for (int i = 0 ; i < A; i++)
+                    {
+                        czasEtykiety += poprawianie_etykiet.sciezkaAll();
+                        czasFloyd += floyd.sciezkaAll();
+
+                        for(int j = 0; j < liczbaLaczy;j++) //randomizacja łaczy
+                        {
+                            losowa2 = rnd.NextDouble();
+                            lacze[j + 1] = new Lacze(j+1, lacze[j+1].wezelPoczatkowy, lacze[j+1].wezelKoncowy, losowa2);
+                        }
+
+                    }
+                }
+                catch (Exception except)
+                {
+                    Console.WriteLine(except.Message);
+                    okej = false;
+                }
+                Console.WriteLine("Laczny czas operacji Floyda: " + czasFloyd.ToString() + "ms");
+                Console.WriteLine("Laczny czas operacji Etykiety: " + czasEtykiety.ToString() + "ms");
+                Console.WriteLine("X: " + (czasFloyd / (double)A).ToString() + "ms");
+                Console.WriteLine("Y: " + (czasEtykiety/ (double)A).ToString() + "ms");
+            }
             Console.ReadLine();
-            
         }
         public void wczytywanie()
         {
              
             bool ok = false;
-            Random rnd = new Random();
+            Random rnd = new Random(DateTime.Now.Millisecond);
             double losowa;
             while (!ok)
             {

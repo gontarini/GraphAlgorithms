@@ -8,7 +8,8 @@ namespace AlgorytmyGrafowe
 {
     interface IWyznaczanieSciezek
     {
-        string sciezkaMiedzyWezlami(int wezelPocz, int wezelKoncowy);
+        string sciezkaMiedzyWezlami(int wezelPocz, int wezelKoncowy, int czyyes);
         string sciezkaMiedzyWszystkimiWezlami(int wezelPocz);
+        double sciezkaAll();
     }
 }
