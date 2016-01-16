@@ -28,109 +28,62 @@ namespace AlgorytmyGrafowe
         }
         public string sciezkaMiedzyWezlami(int wezelPocz, int wezelKoncowy, int ifyes) 
         {
-            Lacze[] lacza_current;
+            string sciezka2 = "";
             fifo = new Queue<int>();
-            int wezelKonca,wezelPoczatku;
-            if(ifyes == 0)
-            siec.tablica_wierzcholkow = new int[siec.liczbaWezlow+1, siec.liczbaKrawedzi + 1];
-            int tmp,tmp2=0;
-            bool czyokej = true;
+            int wezelKonca, liczbaSasiadow, j = 1;
+            if (ifyes == 0)
+            siec.macierz_poprzednikow_etykiety = new int[siec.liczbaWezlow + 1];
+            int id,tmp;
             string sciezka = "Najgrubsza sciezka z wierzcholka " + wezelPocz + " do wierzcholka " + wezelKoncowy + " : ";
-            #region Reset danych
-            for (int i = 1; i <= siec.liczbaWezlow; i++) //Reset wezlow
+            if (ifyes == 0)
             {
-                wezly[i].etykieta = 0;
-                wezly[i].odwiedzone = false;
-            }
-
-                siec.liczba_odwiedzonych_wezlow = 0;
-            #endregion
-
-            wezly[wezelPocz].etykieta = nieskonczonosc;
-            fifo.Enqueue(wezelPocz);
-            
-            while(fifo.Count != 0 && wezly[wezelKoncowy].odwiedzone == false) // warunek konca poszukiwania najgrubszej sciezki 
-            {
-                czyokej = true;
-                tmp = fifo.Dequeue();
-                wezly[tmp].odwiedzone = true;
-                if (tmp == tmp2)
-                    czyokej = false;
-
-                
-                if (czyokej == true)
+                #region Reset danych
+                for (int i = 1; i <= siec.liczbaWezlow; i++) //Reset wezlow
                 {
-                    lacza_current = zwracamPolaczenia(tmp); //zwracam możliwe drogi z danego wezla do innych   
-                    lacza_current = sortowanie(lacza_current); //sortowanie w celu sprawdzania najpierw najgrubszych polaczen
+                    wezly[i].etykieta = 0;
+                }
+                #endregion
 
-                    while (wskaznik_ilosci_dostepnych_drog != 1) //dopóki istnieja zwrócone wcześniej drogi, zmieniam etykiety     
+                wezly[wezelPocz].etykieta = nieskonczonosc;
+                fifo.Enqueue(wezelPocz);
+
+                while (fifo.Count != 0)// warunek konca poszukiwania najgrubszej sciezki 
+                {
+                    tmp = fifo.Dequeue();
+
+                    liczbaSasiadow = wezly[tmp].liczba_sasiadow;
+
+                    while (j != liczbaSasiadow) //dopóki istnieja sasiedzi  
                     {
-                        wezelKonca = lacza_current[wskaznik_ilosci_dostepnych_drog - 1].wezelKoncowy;
-                        wezelPoczatku = lacza_current[wskaznik_ilosci_dostepnych_drog - 1].wezelPoczatkowy;
-
-                        if (tmp != wezelPoczatku) //korygowanie wezla poczatkowego
+                        wezelKonca = wezly[tmp].tablica_sasiadow[j];
+                        id = wezly[tmp].idLacza[j];
+                        if (wezly[wezelKonca].etykieta < Math.Min(lacza[id].koszt, wezly[tmp].etykieta) && wezly[wezelKonca].etykieta != nieskonczonosc) //Math.Min(lacza[id].koszt, wezly[tmp].etykieta)
                         {
-                            tmp2 = wezelPoczatku;
-                            wezelPoczatku = wezelKonca;
-                            wezelKonca = tmp2;
-                        }
-                        if (wezly[wezelKonca].etykieta <= Math.Min(lacza_current[wskaznik_ilosci_dostepnych_drog - 1].koszt, wezly[wezelPoczatku].etykieta))
-                        {
-                            wezly[wezelKonca].etykieta = Math.Min(lacza_current[wskaznik_ilosci_dostepnych_drog - 1].koszt, wezly[wezelPoczatku].etykieta);
+                            wezly[wezelKonca].etykieta = Math.Min(lacza[id].koszt, wezly[tmp].etykieta);
                             fifo.Enqueue(wezelKonca);
+                            siec.macierz_poprzednikow_etykiety[wezelKonca] = tmp;
                         }
-                        wskaznik_ilosci_dostepnych_drog--;
+                        j++;
                     }
-                    siec.liczba_odwiedzonych_wezlow++; ///zahaszowane, bo się program sypie, spróbować rozwiązać sprawę powtarzających się wezlow sciezki
-                    tmp2 = tmp;
-                    //siec.tablica_wierzcholkow[wezelPocz, siec.liczba_odwiedzonych_wezlow] = tmp;
-                    //if (tmp != siec.tablica_wierzcholkow[wezelPocz, siec.liczba_odwiedzonych_wezlow - 1])
-                    sciezka += tmp + " ";
-                    if (fifo.Count() != 0)
-                        kosztSciezki[wezelPocz, wezelKoncowy] += wezly[fifo.Peek()].etykieta;
-                    else
-                        kosztSciezki[wezelPocz, wezelKoncowy] += wezly[wezelKoncowy].etykieta;
-                }
-            }            
-            sciezki.Add(sciezka);
-            return sciezka;
-        }
-
-        private Lacze[] sortowanie(Lacze[] lacze)
-        {
-            int j = 1;
-            while (j != wskaznik_ilosci_dostepnych_drog - 1)
-            {
-                j++;
-                for (int i = 1; i < wskaznik_ilosci_dostepnych_drog - 1; i++)
-                {
-                    if (lacze[i].koszt.CompareTo(lacze[i + 1].koszt) > 0)
-                    {
-                        Lacze temp;
-                        temp = lacze[i + 1];
-                        lacze[i + 1] = lacze[i];
-                        lacze[i] = temp;
-                    }
+                    j = 1;
                 }
             }
-
-            return lacze;
-        } //sortuje wagi laczy, zeby zaczynac zawsze od najgrubszej (mysle, ze to ma znaczenie w FIFO)
-        private Lacze[] zwracamPolaczenia(int indeksPoczatku)
-        {
-            int j = 1;
-            Lacze[] polaczenia_z_poczatkowym = new Lacze[siec.liczbaKrawedzi + 1];
-            for(int i = 0; i < siec.liczbaKrawedzi; i++)
+            if (siec.macierz_poprzednikow_etykiety[wezelKoncowy] != 0)
             {
-                if(lacza[i + 1].wezelPoczatkowy == indeksPoczatku || lacza[i+1].wezelKoncowy == indeksPoczatku) // tu byla zmiana
+                int next = wezelKoncowy;
+                while (next != 0)
                 {
-                    polaczenia_z_poczatkowym[j] = lacza[i + 1];
+                    kosztSciezki[wezelPocz, wezelKoncowy] += wezly[next].etykieta;
+                    sciezka2 += "" + next.ToString();
+                    next = siec.macierz_poprzednikow_etykiety[next];
                     j++;
                 }
-            }
-            wskaznik_ilosci_dostepnych_drog = j;
-            return polaczenia_z_poczatkowym;
-        } //funkcja odpowiadajaca za zwracanie polaczen danego wezla z pozostalymi
+             }
+            for (int i = j - 2; i >= 0; i--)
+                sciezka += sciezka2[i];
+                sciezki.Add(sciezka2);
+            return sciezka;
+        }
         
         public string sciezkaMiedzyWszystkimiWezlami(int wezelPocz) //wszystkie sciezki od danego wezla poczatkowego do kazdego wezla
         {
@@ -155,18 +108,26 @@ namespace AlgorytmyGrafowe
         public string wszystkieSciezki()
         {
             string sciezka = "";
-
+            int k;
             for (int i = 1; i <= siec.liczbaWezlow; i++)
             {
+                k = 2; //zmienna ograniczająca ilość rozwiązywań grafu
                 for (int j = 1; j <= siec.liczbaWezlow; j++)
                 {
                     if (i != j)
                     {
                         if (i == 1 && j == 2)
+                        {
                             sciezka += sciezkaMiedzyWezlami(i, j, 0) + "\n";
+                            k++;
+                        }
+                        else if (k % 2 == 0)
+                        {
+                            sciezka += sciezkaMiedzyWezlami(i, j, 0) + "\n";
+                            k++;
+                        }
                         else
                             sciezka += sciezkaMiedzyWezlami(i, j, 1) + "\n";
-          
                     }
                 }
             }
@@ -175,11 +136,9 @@ namespace AlgorytmyGrafowe
 
         public double sciezkaAll()
         {
-            //string sciezka = "";
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             wszystkieSciezki();
-            //Console.WriteLine(sciezka);
             stopwatch.Stop();
             return (stopwatch.ElapsedMilliseconds);
 

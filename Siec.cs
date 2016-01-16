@@ -10,14 +10,12 @@ namespace AlgorytmyGrafowe
     {
         public int liczbaWezlow;
         public int liczbaKrawedzi;
-        public int liczba_odwiedzonych_wezlow;
 
-        
+        public int[] macierz_poprzednikow_etykiety;
+
+        //tablice dla algorytmu Floyda
         public int[,] macierz_poprzednikow;
         public double[,] macierz_sasiedztwa;
-        public double[,] macierz_najdluzszych_sciezek;
-
-        public int[,] tablica_wierzcholkow;
 
         public Siec()
         {

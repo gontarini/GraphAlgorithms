@@ -25,30 +25,49 @@ namespace AlgorytmyGrafowe
             double losowa2;
             czasEtykiety = 0; czasFloyd = 0;
             bool okej = false;
-            //string sciezka;
+            int a, b;
             while (okej != true)
             {
                 try
                 {
+                    #region inicjacje + wczytywanie
                     siec = new Siec();
                     wczytywanie();
 
-                    #region inicjacje
+                    
                     //generacja macierzy poprzednikow
                     siec.macierz_poprzednikow = new int[siec.liczbaWezlow + 1, siec.liczbaWezlow + 1];
                     //generacja macierzy sasiedztwa
                     siec.macierz_sasiedztwa = new double[siec.liczbaWezlow + 1, siec.liczbaWezlow + 1];
-                    siec.macierz_najdluzszych_sciezek = new double[siec.liczbaWezlow + 1, siec.liczbaWezlow + 1];
-                    
+
+                    #region zapisywanie sieci (sasiedzkich wezlow)
+                    for (int i = 1; i<=liczbaLaczy;i++)
+                    {
+                        a = lacze[i].wezelPoczatkowy;
+                        b = lacze[i].wezelKoncowy;
+                        wezly[a].tablica_sasiadow[wezly[a].liczba_sasiadow] = b;
+                        wezly[a].idLacza[wezly[a].liczba_sasiadow] = lacze[i].idLacza;
+                        wezly[a].liczba_sasiadow++; 
+                    }
+                    #endregion
+                    #region pokazywanie sieci
+                    Console.WriteLine("Wczytana siec: ");
+                    for(int i = 1; i<=liczbaLaczy;i++)
+                        Console.WriteLine(lacze[i].idLacza+". "+"Wezel poczatkowy: " + lacze[i].wezelPoczatkowy+ " wezel koncowy: " + lacze[i].wezelKoncowy+ " koszt: " +lacze[i].koszt);
+                    Console.WriteLine();
+                    #endregion
                     PoprawianieEtykiet poprawianie_etykiet = new PoprawianieEtykiet(liczbaWezlow);
                     poprawianie_etykiet.siec = siec;
                     poprawianie_etykiet.lacza = lacze;
                     poprawianie_etykiet.wezly = wezly;
+                    //Console.WriteLine(poprawianie_etykiet.wszystkieSciezki());
+                    //Console.ReadLine();
 
                     Floyd floyd = new Floyd();
                     floyd.siec = siec;
                     floyd.lacza = lacze;
                     floyd.wezly = wezly;
+                    floyd.sciezkaAll();
                     #endregion
 
                     Console.WriteLine("Podaj liczbę wykonań operacji znajdowania sciezek: [A]");
